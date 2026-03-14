@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 import json
+from backend.analytics.satellite_metrics import compute_analytics
 
 router = APIRouter()
 
@@ -25,3 +26,9 @@ def search_satellite(name: str):
             return sat
 
     return {"message": "Satellite not found"}
+@router.get("/analytics")
+def get_analytics():
+
+    analytics = compute_analytics()
+
+    return analytics
