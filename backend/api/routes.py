@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 import json
-from backend.analytics.satellite_metrics import compute_analytics
-from backend.analytics.constellations import get_starlink_satellites
-from backend.processing.orbit_prediction import predict_orbit
-from backend.analytics.statistics import orbit_statistics
-from backend.analytics.statistics import operator_statistics
-from backend.analytics.statistics import altitude_statistics
+from analytics.satellite_metrics import compute_analytics
+from analytics.constellations import get_starlink_satellites
+from processing.orbit_prediction import predict_orbit
+from analytics.statistics import orbit_statistics
+from analytics.statistics import operator_statistics
+from analytics.statistics import altitude_statistics
 
 router = APIRouter()
 
