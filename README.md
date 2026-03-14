@@ -24,10 +24,10 @@ The system should also help users understand how satellite constellations operat
 ---
 
 # 🛰 Project Overview
-
 The system consists of two main components.
 
 ## Backend (Radhika Dhama – Data & Backend)
+
 
 Responsible for:
 
@@ -37,9 +37,9 @@ Responsible for:
 • Building backend APIs for frontend visualization
 • Generating analytics and statistics
 
----
 
 ## Frontend (Ankush Agrawal – Web Application & Visualization)
+
 
 Responsible for:
 
@@ -377,6 +377,7 @@ uvicorn backend.main:app --reload
 
 ---
 
+<<<<<<< HEAD
 ## Access API Documentation
 
 ```
@@ -447,3 +448,6 @@ frontend
 Both candidates work on separate branches and merge changes using pull requests.
 
 ---
+=======
+http://127.0.0.1:8000/docs
+>>>>>>> 71ecc5fe8db27e1e2e3988ebaadbcacabea3f82d
