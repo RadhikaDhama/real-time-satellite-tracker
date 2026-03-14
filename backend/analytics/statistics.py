@@ -15,11 +15,11 @@ def orbit_statistics():
 
     for sat in satellites:
 
-        altitude = sat["altitude_km"]
+        alt = sat["altitude_km"]
 
-        if altitude < 2000:
+        if alt < 2000:
             orbit_counts["LEO"] += 1
-        elif altitude < 35000:
+        elif alt < 35000:
             orbit_counts["MEO"] += 1
         else:
             orbit_counts["GEO"] += 1
@@ -32,18 +32,7 @@ def operator_statistics():
     with open("data/processed_satellites.json") as f:
         satellites = json.load(f)
 
-    operators = []
-
-    for sat in satellites:
-
-        name = sat["name"].upper()
-
-        if "STARLINK" in name:
-            operators.append("SpaceX")
-        elif "ISS" in name:
-            operators.append("NASA")
-        else:
-            operators.append("Other")
+    operators = [sat["operator"] for sat in satellites]
 
     return dict(Counter(operators))
 
@@ -53,7 +42,7 @@ def altitude_statistics():
     with open("data/processed_satellites.json") as f:
         satellites = json.load(f)
 
-    altitude_ranges = {
+    ranges = {
         "0-500 km": 0,
         "500-1000 km": 0,
         "1000-5000 km": 0,
@@ -62,15 +51,25 @@ def altitude_statistics():
 
     for sat in satellites:
 
-        altitude = sat["altitude_km"]
+        alt = sat["altitude_km"]
 
-        if altitude < 500:
-            altitude_ranges["0-500 km"] += 1
-        elif altitude < 1000:
-            altitude_ranges["500-1000 km"] += 1
-        elif altitude < 5000:
-            altitude_ranges["1000-5000 km"] += 1
+        if alt < 500:
+            ranges["0-500 km"] += 1
+        elif alt < 1000:
+            ranges["500-1000 km"] += 1
+        elif alt < 5000:
+            ranges["1000-5000 km"] += 1
         else:
-            altitude_ranges["5000+ km"] += 1
+            ranges["5000+ km"] += 1
 
-    return altitude_ranges
+    return ranges
+
+
+def category_statistics():
+
+    with open("data/processed_satellites.json") as f:
+        satellites = json.load(f)
+
+    categories = [sat["category"] for sat in satellites]
+
+    return dict(Counter(categories))

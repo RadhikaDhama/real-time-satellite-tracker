@@ -1,5 +1,4 @@
 from skyfield.api import EarthSatellite, load
-import json
 
 
 def predict_orbit(satellite_name):
@@ -15,23 +14,24 @@ def predict_orbit(satellite_name):
 
         if satellite_name.lower() in name.lower():
 
-            line1 = lines[i+1]
-            line2 = lines[i+2]
+            line1 = lines[i + 1]
+            line2 = lines[i + 2]
 
             satellite = EarthSatellite(line1, line2, name, ts)
 
             orbit_points = []
 
-            for minute in range(0, 90, 5):
+            for minute in range(0, 180, 5):
 
-                t = ts.now() + minute / 1440.0
+                t = ts.now() + minute / 1440
 
                 geocentric = satellite.at(t)
                 subpoint = geocentric.subpoint()
 
                 orbit_points.append({
                     "latitude": subpoint.latitude.degrees,
-                    "longitude": subpoint.longitude.degrees
+                    "longitude": subpoint.longitude.degrees,
+                    "altitude_km": subpoint.elevation.km
                 })
 
             return {

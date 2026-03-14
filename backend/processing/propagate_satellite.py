@@ -6,6 +6,44 @@ TLE_FILE = Path("data/tle_cache.txt")
 OUTPUT_FILE = Path("data/processed_satellites.json")
 
 
+def classify_satellite(name):
+
+    name = name.upper()
+
+    if "STARLINK" in name:
+        return "communication"
+
+    if "GPS" in name:
+        return "navigation"
+
+    if "NOAA" in name:
+        return "weather"
+
+    if "ISS" in name or "HUBBLE" in name:
+        return "scientific"
+
+    return "other"
+
+
+def detect_operator(name):
+
+    name = name.upper()
+
+    if "STARLINK" in name:
+        return "SpaceX"
+
+    if "GPS" in name:
+        return "US Air Force"
+
+    if "NOAA" in name:
+        return "NOAA"
+
+    if "ISS" in name:
+        return "NASA"
+
+    return "Other"
+
+
 def parse_tle():
 
     satellites = []
@@ -17,8 +55,8 @@ def parse_tle():
 
         try:
             name = lines[i]
-            line1 = lines[i+1]
-            line2 = lines[i+2]
+            line1 = lines[i + 1]
+            line2 = lines[i + 2]
 
             satellites.append({
                 "name": name,
@@ -53,11 +91,17 @@ def compute_positions():
         geocentric = satellite.at(t)
         subpoint = geocentric.subpoint()
 
+        velocity = geocentric.velocity.km_per_s
+        speed = (velocity[0]**2 + velocity[1]**2 + velocity[2]**2) ** 0.5
+
         results.append({
             "name": sat["name"],
             "latitude": subpoint.latitude.degrees,
             "longitude": subpoint.longitude.degrees,
-            "altitude_km": subpoint.elevation.km
+            "altitude_km": subpoint.elevation.km,
+            "velocity_km_s": speed,
+            "category": classify_satellite(sat["name"]),
+            "operator": detect_operator(sat["name"])
         })
 
     return results
