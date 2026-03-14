@@ -1,163 +1,449 @@
-# Real-Time Satellite Tracker
+# 🌍 Real-Time Satellite Tracker
 
-A web-based system that visualizes satellites orbiting Earth in real time.  
-The project retrieves satellite orbital data from public datasets, processes it using orbital mechanics libraries, and exposes APIs for real-time visualization on an interactive map or globe.
+A full-stack web application that visualizes satellites orbiting Earth in real time.
 
-This project is developed as part of an internship assignment to demonstrate backend data processing, API development, and satellite analytics.
+The system collects satellite orbital data from public datasets, processes the data using orbital mechanics libraries, and exposes APIs that power an interactive visualization platform.
 
-## Problem Statement
+The application allows users to explore satellite constellations, analyze orbital distributions, and understand how satellites move around Earth.
+
+---
+
+#  Problem Statement
 
 Build a web application that visualizes satellites orbiting Earth in real time.
 
 The application should:
 
-- Display satellite positions around Earth
-- Show orbital paths
-- Allow filtering satellites by category
-- Provide insights into satellite distribution
+• Display real-time satellite positions
+• Show orbital paths around Earth
+• Allow filtering satellites by category
+• Provide insights into satellite distribution
 
-Users should be able to explore different satellite constellations such as communication satellites, navigation satellites, and scientific satellites.
+The system should also help users understand how satellite constellations operate.
 
-## Project Overview
+---
 
-The system consists of two main components:
+# 🛰 Project Overview
 
-### Backend (Student 1)
+The system consists of two main components.
 
-Responsible for:
-
-- Collecting satellite orbital data
-- Processing Two-Line Element (TLE) datasets
-- Converting orbital elements into geographic coordinates
-- Providing APIs for the frontend
-- Generating satellite analytics and statistics
-
-### Frontend (Student 2)
+## Backend (radhika Dhama – Data & Backend)
 
 Responsible for:
 
-- Interactive globe or map visualization
-- Satellite filtering and search
-- Displaying satellite information panels
-- Rendering orbit paths
-- Building analytics dashboards
+• Collecting satellite data from TLE datasets
+• Converting orbital elements into geographic coordinates
+• Calculating satellite velocity and altitude
+• Building backend APIs for frontend visualization
+• Generating analytics and statistics
 
-## Data Sources
+---
+
+## Frontend (Ankush Agrawal – Web Application & Visualization)
+
+Responsible for:
+
+• Interactive Earth map or globe visualization
+• Displaying satellites moving in real time
+• Orbit path rendering
+• Satellite search and filtering
+• Analytics dashboards
+
+---
+
+# 📡 Data Sources
 
 Satellite data is obtained from publicly available datasets.
 
-### Satellite TLE Data
+### Satellite Orbit Data (TLE)
+
 https://celestrak.org/NORAD/elements
 
 ### Starlink Satellite Data
+
 https://celestrak.org/NORAD/elements/starlink.txt
 
 ### Satellite Position APIs
+
 https://api.wheretheiss.at
 https://www.n2yo.com/api
 
-## System Architecture
+---
 
-Satellite data flows through several stages.
+#  System Architecture
 
-TLE Data Source  
-↓  
-Data Ingestion  
-↓  
-Satellite Propagation using Skyfield  
-↓  
-Processed Satellite Dataset  
-↓  
-FastAPI Backend APIs  
-↓  
+```
+Celestrak TLE Data
+        ↓
+Data Ingestion
+(fetch_tle.py)
+        ↓
+Satellite Propagation
+(Skyfield Library)
+        ↓
+Processed Satellite Dataset
+(processed_satellites.json)
+        ↓
+FastAPI Backend
+        ↓
+Analytics + Orbit Prediction APIs
+        ↓
 Frontend Visualization
+```
 
-## Backend Features
+---
 
-The backend system provides the following functionality:
+#  Backend Features
 
-### Satellite Data Processing
-- TLE data ingestion
-- Satellite orbit propagation
-- Conversion of orbital elements into geographic coordinates
+## Satellite Data Processing
 
-### Satellite Tracking APIs
-- Retrieve real-time satellite positions
-- Search satellites by name
-- Predict orbit paths
+The backend processes satellite orbital data and extracts useful attributes.
 
-### Satellite Analytics
-- Satellites by orbit type (LEO, MEO, GEO)
-- Satellites by operator
-- Satellite altitude distribution
+Each satellite record contains:
 
-### Constellation Detection
-- Detection of Starlink satellites
+```
+name
+latitude
+longitude
+altitude_km
+velocity_km_s
+category
+operator
+```
 
-## API Endpoints
+### Processing Steps
 
-### Satellite Data
+1. Fetch TLE datasets from Celestrak
+2. Parse orbital elements
+3. Propagate orbit using **Skyfield**
+4. Convert orbital coordinates to geographic coordinates
+5. Calculate velocity of satellites
+6. Detect satellite operator
+7. Classify satellite category
 
-GET /satellites  
-Returns all satellite positions.
+---
 
-GET /satellite?name=ISS  
-Search for a satellite by name.
+#  Real-Time Satellite Updates
 
-### Orbit Prediction
+The backend simulates real-time tracking by periodically updating satellite positions.
 
-GET /orbit/{satellite_name}  
-Returns predicted orbit path for the satellite.
+Technology used:
 
-### Constellations
+```
+APScheduler
+```
 
-GET /constellations/starlink  
-Returns Starlink satellites.
+Satellite positions refresh every **30 seconds**.
 
-### Analytics
+---
 
-GET /analytics  
-Returns overall satellite analytics.
+# 🌐 API Endpoints
 
-### Statistics
+## Satellite Data
 
-GET /statistics/orbits  
-Returns satellite distribution by orbit type.
+### Get All Satellites
 
-GET /statistics/operators  
-Returns satellites grouped by operator.
+```
+GET /satellites
+```
 
-GET /statistics/altitudes  
-Returns satellites grouped by altitude ranges.
+Returns real-time satellite dataset.
 
-## Setup Instructions
+---
 
-### Clone the Repository
+### Search Satellite
 
+```
+GET /satellite?name=ISS
+```
+
+Returns a specific satellite.
+
+---
+
+## Orbit Prediction
+
+### Predict Orbit Path
+
+```
+GET /orbit/{satellite_name}
+```
+
+Returns predicted orbit path for the next **3 hours**.
+
+Example output:
+
+```
+{
+  "satellite": "ISS",
+  "orbit_path": [
+    {"latitude": 10.5, "longitude": 80.2, "altitude_km": 420}
+  ]
+}
+```
+
+---
+
+## Satellite Constellations
+
+### Starlink Constellation
+
+```
+GET /constellations/starlink
+```
+
+Returns all Starlink satellites.
+
+---
+
+## Satellite Analytics
+
+### Satellites by Orbit Type
+
+```
+GET /statistics/orbits
+```
+
+Returns:
+
+```
+LEO
+MEO
+GEO
+```
+
+---
+
+### Satellites by Operator
+
+```
+GET /statistics/operators
+```
+
+Example:
+
+```
+SpaceX
+NASA
+NOAA
+Other
+```
+
+---
+
+### Satellites by Altitude Range
+
+```
+GET /statistics/altitudes
+```
+
+Returns satellite distribution by altitude.
+
+---
+
+### Satellites by Category
+
+```
+GET /statistics/categories
+```
+
+Returns satellites grouped by:
+
+```
+communication
+navigation
+weather
+scientific
+```
+
+---
+
+#  Data Insights Dashboard
+
+The backend APIs support visual dashboards such as:
+
+• satellites by orbit type
+• satellites by altitude
+• satellites by operator
+• satellites by category
+
+Visualization libraries that may be used:
+
+```
+Chart.js
+D3.js
+ECharts
+```
+
+---
+
+#  Bonus Features Implemented
+
+## Starlink Constellation Visualization
+
+The system detects and highlights **Starlink satellites**.
+
+---
+
+## Orbit Path Prediction
+
+Users can click a satellite and view its **future orbit path**.
+
+---
+
+## Real-Time Simulation
+
+Satellite positions update automatically using a scheduler.
+
+---
+
+#  Screenshots
+
+### Satellite Map Visualization
+
+![Satellite Map](screenshots/map_view.png)
+
+---
+
+### Orbit Prediction Visualization
+
+![Orbit Prediction](screenshots/orbit_prediction.png)
+
+---
+
+### Analytics Dashboard
+
+![Analytics Dashboard](screenshots/analytics_dashboard.png)
+
+---
+
+# Setup Instructions
+
+## Clone Repository
+
+```
 git clone https://github.com/RadhikaDhama/real-time-satellite-tracker.git
+```
 
-### Navigate to Project
+---
 
+## Navigate to Project
+
+```
 cd satellite-tracker
+```
 
-### Create Virtual Environment
+---
 
+## Create Virtual Environment
+
+```
 python -m venv venv
+```
 
-### Activate Environment
+---
 
-Windows:
+## Activate Environment
 
+Windows
+
+```
 venv\Scripts\activate
+```
 
-### Install Dependencies
+---
 
+## Install Dependencies
+
+```
 pip install -r requirements.txt
+```
 
-### Run Backend Server
+---
 
+## Generate Satellite Dataset
+
+```
+python backend/processing/propagate_satellite.py
+```
+
+---
+
+## Run Backend Server
+
+```
 uvicorn backend.main:app --reload
+```
 
-### Access API
+---
 
+## Access API Documentation
+
+```
 http://127.0.0.1:8000/docs
+```
+
+---
+
+#  Project Structure
+
+```
+satellite-tracker
+│
+├── backend
+│   ├── ingestion
+│   ├── processing
+│   ├── analytics
+│   ├── services
+│   ├── api
+│   └── main.py
+│
+├── data
+│
+├── screenshots
+│
+├── README.md
+└── requirements.txt
+```
+
+---
+
+#  Technologies Used
+
+## Backend
+
+```
+Python
+FastAPI
+Skyfield
+APScheduler
+```
+
+---
+
+## Frontend (planned)
+
+```
+Leaflet
+CesiumJS
+Three.js
+Chart.js
+```
+
+---
+
+# GitHub Collaboration
+
+The project uses GitHub for collaboration.
+
+Branches used:
+
+```
+main
+backend
+frontend
+```
+
+Both candidates work on separate branches and merge changes using pull requests.
+
+---
