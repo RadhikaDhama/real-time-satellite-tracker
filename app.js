@@ -6,8 +6,8 @@ const map = L.map('map', {
   maxBoundsViscosity: 1.0
 }).setView([20, 0], 3);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors'
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors © CARTO'
 }).addTo(map);
 
 let issMarker = null;
@@ -30,64 +30,54 @@ async function updateISS() {
   if (issMarker) {
     issMarker.setLatLng([latitude, longitude]);
   } else {
-    issMarker = L.marker([latitude, longitude]).addTo(map);
+    issMarker = L.circleMarker([latitude, longitude], {
+      radius: 6,
+      color: '#ffffff',
+      fillColor: '#ffffff',
+      fillOpacity: 1
+    }).addTo(map);
+    issMarker.bindPopup('ISS (International Space Station)');
+    issMarker.on('click', () => {
+      document.getElementById('sat-name').textContent = 'ISS (International Space Station)';
+      document.getElementById('sat-alt').textContent = lastAlt;
+      document.getElementById('sat-vel').textContent = lastVel;
+      document.getElementById('sat-lat').textContent = data.latitude.toFixed(4);
+      document.getElementById('sat-lng').textContent = data.longitude.toFixed(4);
+    });
   }
 
   if (orbitLine) {
     orbitLine.setLatLngs(issTrail);
   } else {
-    orbitLine = L.polyline(issTrail, { color: 'cyan', weight: 1 }).addTo(map);
+    orbitLine = L.polyline(issTrail, { color: '#ffffff', weight: 1, opacity: 0.4 }).addTo(map);
   }
 }
 
 updateISS();
 setInterval(updateISS, 5000);
 
-setTimeout(() => {
-  issMarker.on('click', () => {
-    const pos = issMarker.getLatLng();
-    document.getElementById('sat-name').textContent = 'ISS (International Space Station)';
-    document.getElementById('sat-alt').textContent = lastAlt;
-    document.getElementById('sat-vel').textContent = lastVel;
-    document.getElementById('sat-lat').textContent = pos.lat.toFixed(4);
-    document.getElementById('sat-lng').textContent = pos.lng.toFixed(4);
-  });
-}, 6000);
-
-const orbitColors = {
-  LEO: '#00d4ff',
-  MEO: '#39ff14',
-  GEO: '#ff6b35'
-};
-
-function getOrbitType(altitude) {
-  if (altitude < 2000) return 'LEO';
-  if (altitude < 35786) return 'MEO';
-  return 'GEO';
-}
-
-const satelliteMarkers = {
-  LEO: [],
-  MEO: [],
-  GEO: []
-};
+const satelliteMarkers = [];
 
 async function loadSatellites() {
-  const response = await fetch('http://127.0.0.1:8000/satellites');
+  satelliteMarkers.forEach(m => m.remove());
+  satelliteMarkers.length = 0;
+
+  const response = await fetch('https://real-time-satellite-tracker.onrender.com/satellites');
   const satellites = await response.json();
 
   satellites.forEach(sat => {
-    const orbitType = getOrbitType(sat.altitude_km);
-    const color = orbitColors[orbitType];
+    const isStarlink = sat.name.toUpperCase().includes('STARLINK');
+    const color = isStarlink ? '#ffd700' : '#a0c4ff';
 
     const marker = L.circleMarker([sat.latitude, sat.longitude], {
-      radius: 3,
+      radius: isStarlink ? 4 : 3,
       color: color,
       fillColor: color,
-      fillOpacity: 0.8
+      fillOpacity: isStarlink ? 1 : 0.5
     }).addTo(map);
 
     marker.bindPopup(sat.name);
+    marker.satData = sat;
 
     marker.on('click', () => {
       document.getElementById('sat-name').textContent = sat.name;
@@ -97,41 +87,59 @@ async function loadSatellites() {
       document.getElementById('sat-lng').textContent = sat.longitude.toFixed(4);
     });
 
-    satelliteMarkers[orbitType].push(marker);
+    satelliteMarkers.push(marker);
   });
 }
 
 loadSatellites();
+setInterval(loadSatellites, 30000);
 
-function filterByOrbit(type) {
-  Object.keys(satelliteMarkers).forEach(key => {
-    satelliteMarkers[key].forEach(m => m.remove());
-  });
-  satelliteMarkers[type].forEach(m => m.addTo(map));
+function getOrbitType(altitude) {
+  if (altitude < 2000) return 'LEO';
+  if (altitude < 35786) return 'MEO';
+  return 'GEO';
 }
 
 function showAll() {
-  Object.keys(satelliteMarkers).forEach(key => {
-    satelliteMarkers[key].forEach(m => m.addTo(map));
+  satelliteMarkers.forEach(m => m.addTo(map));
+}
+
+function filterByOrbit(type) {
+  satelliteMarkers.forEach(m => {
+    const orbitType = getOrbitType(m.satData.altitude_km);
+    if (orbitType === type) {
+      m.addTo(map);
+    } else {
+      m.remove();
+    }
+  });
+}
+
+function showStarlink() {
+  satelliteMarkers.forEach(m => {
+    const name = m.getPopup() ? m.getPopup().getContent().toUpperCase() : '';
+    if (name.includes('STARLINK')) {
+      m.addTo(map);
+    } else {
+      m.remove();
+    }
   });
 }
 
 function searchSatellites(query) {
   const q = query.toLowerCase();
-  Object.values(satelliteMarkers).forEach(markers => {
-    markers.forEach(m => {
-      const name = m.getPopup() ? m.getPopup().getContent().toLowerCase() : '';
-      if (name.includes(q)) {
-        m.addTo(map);
-      } else {
-        m.remove();
-      }
-    });
+  satelliteMarkers.forEach(m => {
+    const name = m.getPopup() ? m.getPopup().getContent().toLowerCase() : '';
+    if (name.includes(q)) {
+      m.addTo(map);
+    } else {
+      m.remove();
+    }
   });
 }
 
 async function loadDashboard() {
-  const response = await fetch('http://127.0.0.1:8000/analytics');
+  const response = await fetch('https://real-time-satellite-tracker.onrender.com/analytics');
   const data = await response.json();
 
   document.getElementById('total-count').textContent = data.satellite_count;
@@ -144,13 +152,11 @@ async function loadDashboard() {
       datasets: [{
         label: 'Satellites',
         data: Object.values(data.orbit_distribution),
-        backgroundColor: ['#00d4ff', '#39ff14', '#ff6b35']
+        backgroundColor: ['#3a86ff', '#8338ec', '#ff006e']
       }]
     },
     options: {
-      plugins: {
-        legend: { display: false }
-      },
+      plugins: { legend: { display: false } },
       scales: {
         x: { ticks: { color: '#a8c4d8' }, grid: { color: '#0d2035' } },
         y: { ticks: { color: '#a8c4d8' }, grid: { color: '#0d2035' } }
@@ -165,12 +171,33 @@ async function loadDashboard() {
       labels: Object.keys(data.operator_distribution),
       datasets: [{
         data: Object.values(data.operator_distribution),
-        backgroundColor: ['#00d4ff', '#39ff14', '#ff6b35']
+        backgroundColor: ['#06d6a0', '#ffd166', '#ef476f']
       }]
     },
     options: {
-      plugins: {
-        legend: { labels: { color: '#a8c4d8' } }
+      plugins: { legend: { labels: { color: '#a8c4d8' } } }
+    }
+  });
+
+  const altResponse = await fetch('https://real-time-satellite-tracker.onrender.com/statistics/altitudes');
+  const altData = await altResponse.json();
+
+  const altCtx = document.getElementById('altitudeChart').getContext('2d');
+  new Chart(altCtx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(altData),
+      datasets: [{
+        label: 'Satellites',
+        data: Object.values(altData),
+        backgroundColor: ['#118ab2', '#06d6a0', '#ffd166', '#ef476f']
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#a8c4d8' }, grid: { color: '#0d2035' } },
+        y: { ticks: { color: '#a8c4d8' }, grid: { color: '#0d2035' } }
       }
     }
   });
