@@ -137,7 +137,7 @@ Satellite positions refresh every **30 seconds**.
 
 ---
 
-# 🌐 API Endpoints
+#  API Endpoints
 
 ## Satellite Data
 
