@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 import json
 from backend.analytics.satellite_metrics import compute_analytics
+from backend.analytics.constellations import get_starlink_satellites
 
 router = APIRouter()
 
@@ -32,3 +33,8 @@ def get_analytics():
     analytics = compute_analytics()
 
     return analytics
+
+@router.get("/constellations/starlink")
+def starlink_constellation():
+
+    return get_starlink_satellites()

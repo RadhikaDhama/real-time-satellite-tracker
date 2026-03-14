@@ -41,7 +41,7 @@ def compute_positions():
 
     results = []
 
-    for sat in satellites[:500]:
+    for sat in satellites[:2000]:
 
         satellite = EarthSatellite(
             sat["line1"],
@@ -75,4 +75,3 @@ def save_satellites():
 
 if __name__ == "__main__":
     save_satellites()
-    
