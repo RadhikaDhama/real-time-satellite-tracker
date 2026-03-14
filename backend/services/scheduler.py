@@ -1,5 +1,5 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from backend.processing.propagate_satellite import save_satellites
+from processing.propagate_satellite import save_satellites
 
 
 def start_scheduler():
