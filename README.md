@@ -27,7 +27,7 @@ The system should also help users understand how satellite constellations operat
 
 The system consists of two main components.
 
-## Backend (radhika Dhama – Data & Backend)
+## Backend (Radhika Dhama – Data & Backend)
 
 Responsible for:
 
