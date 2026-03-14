@@ -1,9 +1,11 @@
+# After ✅
 import json
 from pathlib import Path
 from skyfield.api import EarthSatellite, load
 
-TLE_FILE = Path("data/tle_cache.txt")
-OUTPUT_FILE = Path("data/processed_satellites.json")
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+TLE_FILE = BASE_DIR / "data" / "tle_cache.txt"
+OUTPUT_FILE = BASE_DIR / "data" / "processed_satellites.json"
 
 
 def classify_satellite(name):
