@@ -22,7 +22,7 @@ Users should be able to explore different satellite constellations such as commu
 
 The system consists of two main components:
 
-### Backend (Student 1)
+### Backend (Radhika Dhama)
 
 Responsible for:
 
@@ -32,7 +32,7 @@ Responsible for:
 - Providing APIs for the frontend
 - Generating satellite analytics and statistics
 
-### Frontend (Student 2)
+### Frontend (Ankush Agrawal)
 
 Responsible for:
 
