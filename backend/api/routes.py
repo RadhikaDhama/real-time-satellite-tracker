@@ -3,6 +3,9 @@ import json
 from backend.analytics.satellite_metrics import compute_analytics
 from backend.analytics.constellations import get_starlink_satellites
 from backend.processing.orbit_prediction import predict_orbit
+from backend.analytics.statistics import orbit_statistics
+from backend.analytics.statistics import operator_statistics
+from backend.analytics.statistics import altitude_statistics
 
 router = APIRouter()
 
@@ -44,3 +47,18 @@ def starlink_constellation():
 def get_orbit(satellite_name: str):
 
     return predict_orbit(satellite_name)
+
+@router.get("/statistics/orbits")
+def get_orbit_statistics():
+
+    return orbit_statistics()
+
+@router.get("/statistics/operators")
+def get_operator_statistics():
+
+    return operator_statistics()
+
+@router.get("/statistics/altitudes")
+def get_altitude_statistics():
+
+    return altitude_statistics()
