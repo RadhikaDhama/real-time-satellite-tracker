@@ -43,11 +43,14 @@ Responsible for:
 
 Responsible for:
 
-• Interactive Earth map or globe visualization
+• Interactive Earth map visualization
 • Displaying satellites moving in real time
-• Orbit path rendering
-• Satellite search and filtering
-• Analytics dashboards
+• Orbit path rendering for the ISS
+• Starlink constellation highlighting
+• Satellite search and filtering by orbit type
+• Analytics dashboards with charts
+
+**Live Application:** https://satellite-tracker-frontend-nu.vercel.app
 
 ---
 
@@ -89,6 +92,7 @@ FastAPI Backend
 Analytics + Orbit Prediction APIs
         ↓
 Frontend Visualization
+(Leaflet.js + Chart.js)
 ```
 
 ---
@@ -267,12 +271,10 @@ The backend APIs support visual dashboards such as:
 • satellites by operator
 • satellites by category
 
-Visualization libraries that may be used:
+Visualization libraries used:
 
 ```
 Chart.js
-D3.js
-ECharts
 ```
 
 ---
@@ -281,19 +283,19 @@ ECharts
 
 ## Starlink Constellation Visualization
 
-The system detects and highlights **Starlink satellites**.
+Starlink satellites are automatically detected by name and highlighted in gold on the map, visually distinguishing them from the general satellite field.
 
 ---
 
 ## Orbit Path Prediction
 
-Users can click a satellite and view its **future orbit path**.
+The ISS orbit trail is rendered in real time, showing its recent path across the map. Users can also click a satellite to view its predicted future orbit path via the backend API.
 
 ---
 
 ## Real-Time Simulation
 
-Satellite positions update automatically using a scheduler.
+Satellite positions update automatically using a scheduler on the backend and periodic API calls on the frontend.
 
 ---
 
@@ -385,6 +387,30 @@ http://127.0.0.1:8000/docs
 
 ---
 
+## Run Frontend
+
+Switch to the frontend branch:
+
+```
+git checkout frontend
+```
+
+Open `index.html` using Live Server in VS Code.
+
+Ensure the backend is running at:
+
+```
+http://127.0.0.1:8000
+```
+
+Or visit the deployed frontend directly at:
+
+```
+https://satellite-tracker-frontend-nu.vercel.app
+```
+
+---
+
 #  Project Structure
 
 ```
@@ -402,6 +428,9 @@ satellite-tracker
 │
 ├── screenshots
 │
+├── index.html       — page structure and layout
+├── style.css        — styling and dark space theme
+├── app.js           — map logic, satellite tracking, charts
 ├── README.md
 └── requirements.txt
 ```
@@ -421,13 +450,16 @@ APScheduler
 
 ---
 
-## Frontend (planned)
+## Frontend
 
 ```
-Leaflet
-CesiumJS
-Three.js
+HTML
+CSS
+JavaScript
+Leaflet.js
 Chart.js
+Carto Dark Map Tiles
+wheretheiss.at API
 ```
 
 ---
