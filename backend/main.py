@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.api.routes import router
-from backend.services.scheduler import start_scheduler
+from api.routes import router
+from services.scheduler import start_scheduler
 
 
 app = FastAPI(
