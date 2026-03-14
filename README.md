@@ -299,26 +299,6 @@ Satellite positions update automatically using a scheduler on the backend and pe
 
 ---
 
-#  Screenshots
-
-### Satellite Map Visualization
-
-![Satellite Map](screenshots/map_view.png)
-
----
-
-### Orbit Prediction Visualization
-
-![Orbit Prediction](screenshots/orbit_prediction.png)
-
----
-
-### Analytics Dashboard
-
-![Analytics Dashboard](screenshots/analytics_dashboard.png)
-
----
-
 # Setup Instructions
 
 ## Clone Repository
